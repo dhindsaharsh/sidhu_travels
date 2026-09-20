@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Book your airport taxi, local cab, wedding ride, or all India tour with Sidhu Travels by Verpal Singh." />
+  <meta name="keywords" content="book cab, airport transfer booking, wedding ride booking, all India tour booking, Sidhu Travels booking" />
+  <meta name="robots" content="index, follow" />
+  <title>Book Car Booking, Airport Taxi & Tour Service | Sidhu Travels</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand">Sidhu <span>Travels</span></div>
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="booking.html">Booking</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <h1>Book Your Journey</h1>
+      <p>Send your travel details and we will confirm on WhatsApp instantly.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="booking-wrap">
+        <form id="bookingForm" class="booking-form">
+          <div class="form-grid">
+            <label class="field">
+              Customer Name
+              <input type="text" id="name" placeholder="Enter your name" required />
+            </label>
+
+            <label class="field">
+              Mobile Number
+              <input type="tel" id="phone" placeholder="Enter mobile number" required />
+            </label>
+
+            <label class="field">
+              Booking Type
+              <select id="bookingType">
+                <option>Car Booking</option>
+                <option>Airport Pickup</option>
+                <option>Airport Drop</option>
+                <option>All India Tour</option>
+                <option>Wedding Booking</option>
+              </select>
+            </label>
+
+            <label class="field">
+              Preferred Car
+              <select id="car">
+                <option>Swift Dzire</option>
+                <option>Kia</option>
+                <option>Other Vehicle</option>
+              </select>
+            </label>
+
+            <label class="field">
+              Pickup Location
+              <input type="text" id="pickup" placeholder="Pickup location" required />
+            </label>
+
+            <label class="field">
+              Destination
+              <input type="text" id="destination" placeholder="Destination" required />
+            </label>
+
+            <label class="field">
+              Travel Date
+              <input type="date" id="date" required />
+            </label>
+
+            <label class="field">
+              Travel Time
+              <input type="time" id="time" required />
+            </label>
+
+            <label class="field full">
+              Additional Message
+              <textarea id="message" placeholder="Mention passengers, luggage, special requests, or wedding details."></textarea>
+            </label>
+          </div>
+
+          <button type="submit" class="btn submit-btn">Send Booking on WhatsApp</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 Sidhu Travels. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
