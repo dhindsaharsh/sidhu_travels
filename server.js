@@ -20,7 +20,19 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon'
 };
 
+function getInMemoryBookings() {
+  if (!globalThis.__SIDHU_TRAVELS_BOOKINGS__) {
+    globalThis.__SIDHU_TRAVELS_BOOKINGS__ = [];
+  }
+  return globalThis.__SIDHU_TRAVELS_BOOKINGS__;
+}
+
 async function ensureStorage() {
+  if (process.env.VERCEL) {
+    getInMemoryBookings();
+    return;
+  }
+
   await fs.mkdir(DATA_DIR, { recursive: true });
 
   try {
@@ -31,16 +43,33 @@ async function ensureStorage() {
 }
 
 async function readBookings() {
-  const raw = await fs.readFile(BOOKINGS_FILE, 'utf8');
+  if (process.env.VERCEL) {
+    return [...getInMemoryBookings()];
+  }
+
   try {
-    return JSON.parse(raw || '[]');
+    const raw = await fs.readFile(BOOKINGS_FILE, 'utf8');
+    try {
+      return JSON.parse(raw || '[]');
+    } catch {
+      return [];
+    }
   } catch {
-    return [];
+    return [...getInMemoryBookings()];
   }
 }
 
 async function saveBookings(bookings) {
-  await fs.writeFile(BOOKINGS_FILE, JSON.stringify(bookings, null, 2), 'utf8');
+  if (process.env.VERCEL) {
+    globalThis.__SIDHU_TRAVELS_BOOKINGS__ = Array.isArray(bookings) ? bookings : [];
+    return;
+  }
+
+  try {
+    await fs.writeFile(BOOKINGS_FILE, JSON.stringify(bookings, null, 2), 'utf8');
+  } catch {
+    globalThis.__SIDHU_TRAVELS_BOOKINGS__ = Array.isArray(bookings) ? bookings : [];
+  }
 }
 
 function sendJson(res, statusCode, data) {
@@ -54,6 +83,19 @@ function sendJson(res, statusCode, data) {
 }
 
 function parseJsonBody(req) {
+  if (req.body !== undefined) {
+    const raw = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+    if (!raw || !raw.trim()) {
+      return Promise.resolve({});
+    }
+
+    try {
+      return Promise.resolve(JSON.parse(raw));
+    } catch {
+      return Promise.reject(new Error('Invalid JSON body.'));
+    }
+  }
+
   return new Promise((resolve, reject) => {
     let raw = '';
 
@@ -145,47 +187,65 @@ async function serveStaticFile(req, res, requestPath) {
   }
 }
 
+function normalizeApiPath(pathname) {
+  if (pathname === '/health' || pathname === '/api/health') return '/api/health';
+  if (pathname === '/bookings' || pathname === '/api/bookings') return '/api/bookings';
+  if (pathname === '/booking' || pathname === '/api/booking') return '/api/booking';
+  return pathname;
+}
+
+async function handleRequest(req, res) {
+  const requestUrl = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
+  const pathname = normalizeApiPath(decodeURIComponent(requestUrl.pathname));
+
+  if (req.method === 'OPTIONS') {
+    sendJson(res, 200, { ok: true });
+    return;
+  }
+
+  if (pathname === '/api/health') {
+    sendJson(res, 200, {
+      status: 'ok',
+      service: 'Sidhu Travels API',
+      timestamp: new Date().toISOString()
+    });
+    return;
+  }
+
+  if (pathname === '/api/bookings' && req.method === 'GET') {
+    const bookings = await readBookings();
+    sendJson(res, 200, { success: true, bookings });
+    return;
+  }
+
+  if (pathname === '/api/booking' && req.method === 'POST') {
+    await handleBooking(req, res);
+    return;
+  }
+
+  if (pathname.startsWith('/api/')) {
+    sendJson(res, 404, { success: false, message: 'API route not found.' });
+    return;
+  }
+
+  await serveStaticFile(req, res, pathname);
+}
+
+async function handler(req, res) {
+  try {
+    await handleRequest(req, res);
+  } catch (error) {
+    console.error('Server error:', error);
+    sendJson(res, 500, { success: false, message: 'Internal server error.' });
+  }
+}
+
 function createApp() {
-  return http.createServer(async (req, res) => {
-    try {
-      const requestUrl = new URL(req.url, `http://${req.headers.host}`);
-      const pathname = decodeURIComponent(requestUrl.pathname);
-
-      if (req.method === 'OPTIONS') {
-        sendJson(res, 200, { ok: true });
-        return;
-      }
-
-      if (pathname === '/api/health') {
-        sendJson(res, 200, {
-          status: 'ok',
-          service: 'Sidhu Travels API',
-          timestamp: new Date().toISOString()
-        });
-        return;
-      }
-
-      if (pathname === '/api/bookings' && req.method === 'GET') {
-        const bookings = await readBookings();
-        sendJson(res, 200, { success: true, bookings });
-        return;
-      }
-
-      if (pathname === '/api/booking' && req.method === 'POST') {
-        await handleBooking(req, res);
-        return;
-      }
-
-      if (pathname.startsWith('/api/')) {
-        sendJson(res, 404, { success: false, message: 'API route not found.' });
-        return;
-      }
-
-      await serveStaticFile(req, res, pathname);
-    } catch (error) {
+  return http.createServer((req, res) => {
+    handler(req, res).catch((error) => {
       console.error('Server error:', error);
       sendJson(res, 500, { success: false, message: 'Internal server error.' });
-    }
+    });
   });
 }
 
@@ -205,4 +265,13 @@ if (require.main === module) {
   });
 }
 
-module.exports = { startServer, createApp };
+module.exports = {
+  startServer,
+  createApp,
+  handler,
+  handleBooking,
+  readBookings,
+  saveBookings,
+  parseJsonBody,
+  sendJson
+};
