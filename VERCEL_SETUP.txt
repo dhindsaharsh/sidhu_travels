@@ -1,0 +1,9 @@
+Sidhu Travels - Vercel deployment fix
+
+1. The old root server.js caused Vercel's 'Invalid export found in module' error.
+2. The old Node backend is preserved in local-backend/ and is NOT deployed as the root app.
+3. The website is served as a normal static Vercel site.
+4. The booking form now uses api/booking.js, a Vercel-compatible Function.
+5. After the API confirms the form, the existing website opens WhatsApp with the booking details.
+
+Deploy the project root to Vercel. Do not move local-backend/server.js back to the root.

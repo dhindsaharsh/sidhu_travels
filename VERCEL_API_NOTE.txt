@@ -1,0 +1,4 @@
+The frontend contains these API path references:
+/api/booking
+
+The original backend is preserved in local-backend/. A persistent database is not included because Vercel serverless filesystem storage is not persistent.
