@@ -1,0 +1,17 @@
+{
+  "name": "sidhu-travels-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Sidhu Travels website",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "travel",
+    "booking",
+    "express"
+  ],
+  "license": "MIT"
+}

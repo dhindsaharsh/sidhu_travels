@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Sidhu Travels favicon">
+  <defs>
+    <linearGradient id="bg" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#f8c74c"/>
+      <stop offset="100%" stop-color="#d89d1d"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
+  <path d="M92 27H45c-8.8 0-16 7.2-16 16v18.7c0 8.8 7.2 16 16 16h4.7l-10.8 16.8c-1.4 2.2.2 5 2.8 5H54c1.8 0 3.4-1 4.2-2.6l15.4-29.2h18.2c8.8 0 16-7.2 16-16V43c0-8.8-7.2-16-16-16Z" fill="url(#gold)"/>
+  <path d="M74 44H48v12h18.8l-19.5 28H78v-12H58.7L74 44Z" fill="#0f172a" opacity="0.92"/>
+</svg>
