@@ -1,8 +1,12 @@
-import { startServer } from './server.js';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const { createApp } = require('./server.js');
 
 const port = Number(process.env.PORT) || 3000;
 
-startServer(port).catch((error) => {
-  console.error('Failed to start Sidhu Travels server:', error);
-  process.exit(1);
+const server = createApp();
+
+server.listen(port, () => {
+  console.log(`Sidhu Travels server running on port ${port}`);
 });
